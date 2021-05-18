@@ -10,9 +10,52 @@
 
   documentation: 'Build config',
 
-  constants: {
-    NANOPAY_HOME: '/opt/nanopay'
-  },
+  constants: [
+    {
+      name: 'NANOPAY_HOME',
+      value: '/opt/nanopay',
+    },
+    {
+      name: 'HOST_NAME',
+      value: 'hostname -s',
+    },
+    {
+      name: 'PROJECT_HOME',
+      factory: function() {
+        return  __dirname + '/..';
+      }
+    },
+    {
+      name: 'LOG_HOME',
+      factory: function() {
+        return  '';//fix me
+      }
+    },
+    {
+      name: 'JOURNAL_HOME',
+      factory: function() {
+        return  this.PROJECT_HOME + '/journals';
+      }
+    },
+    {
+      name: 'JOURNAL_OUT',
+      factory: function() {
+        return  this.PROJECT_HOME + '/target/journals';
+      }
+    },
+    {
+      name: 'DOCUMENT_OUT',
+      factory: function() {
+        return  this.PROJECT_HOME + '/target/documents';
+      }
+    },
+    {
+      name: 'DOCUMENT_HOME',
+      factory: function() {
+        return  this.PROJECT_HOME + '/documents';
+      }
+    }
+  ],
 
   properties: [
     {
@@ -132,12 +175,6 @@
     },
     {
       class: 'Boolean',
-      help: 'Start nanos with whatever was last built.',
-      name: 'startNanosWithLastBuild',
-      shortName: 'r'
-    },
-    {
-      class: 'Boolean',
       help: 'deployment directories with resources to add to Jar file',
       name: 'deployWithResourcesToAddToJAR',
       shortName: 'R'
@@ -215,32 +252,78 @@
       shortName: 'x'
     }
   ],
+
   actions: [
     {
-      class: 'Boolean',
       help: 'Clean generated code before building.  Required if generated classes have been removed.',
       name: 'clean',
       shortName: 'c',
       code: function() {
         const rimraf = require('rimraf');
-        // const path = require('path');
-
-        var cleanDirs = [ '/bin', '/lib' ];
+        var cleanDirs = [ '/bin', '/lib' ];//TO CONSTANTS
 
         for ( var dir of cleanDirs ) {
           rimraf(this.NANOPAY_HOME + dir + '/*', function () { console.log('done'); });
-          // var directory = ;
-          // fs.readdir(directory, (err, files) => {
-          //   if (err) throw err;
-  
-          //   for (const file of files) {
-          //     fs.unlink(path.join(dir, file), err => {
-          //       if (err) throw err;
-          //     });
-          //   }
-          // });
         }
       }
     },
+    {
+      name: 'startNanos',
+      code: function() {
+
+      }
+    },
+    {
+      name: 'setup_dirs',
+      code: function() {
+        const fs = require("fs");
+        var dir = this.PROJECT_HOME + './foam';
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.NANOPAY_HOME + '/lib';
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.NANOPAY_HOME + '/bin';
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.NANOPAY_HOME + '/etc';
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.LOG_HOME;
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.JOURNAL_HOME;
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+
+        dir = this.DOCUMENT_HOME;
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir();
+        }
+      }
+    },
+    {
+      name: 'deploy_documents',
+      code: function() {
+
+      }
+    },
+    {
+      name: 'deploy_journals',
+      code: function() {
+
+      }
+    }
   ]
  });

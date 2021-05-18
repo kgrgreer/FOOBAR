@@ -31,4 +31,5 @@ opts.alias = { name: 'n' };
 var argv = require('minimist')(process.argv.slice(2), opts);
 
 help();
-config.clean();
+// config.clean();
+console.log(config.PROJECT_HOME);
