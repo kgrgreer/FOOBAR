@@ -11,7 +11,7 @@
   documentation: 'Build config',
 
   constants: [
-    {
+    {//to properties
       name: 'NANOPAY_HOME',
       value: '/opt/nanopay',
     },
@@ -277,39 +277,50 @@
       name: 'setup_dirs',
       code: function() {
         const fs = require("fs");
+        const rimraf = require('rimraf');
+
         var dir = this.PROJECT_HOME + './foam';
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.NANOPAY_HOME + '/lib';
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.NANOPAY_HOME + '/bin';
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.NANOPAY_HOME + '/etc';
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.LOG_HOME;
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.JOURNAL_HOME;
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
         }
 
         dir = this.DOCUMENT_HOME;
+        if ( fs.existsSync(dir)) {
+          rimraf(dir, function () { console.log('done'); });
+        }
+
         if ( ! fs.existsSync(dir)) {
-          fs.mkdir();
+          fs.mkdir(dir);
+        }
+
+        dir = this.DOCUMENT_OUT;
+        if ( ! fs.existsSync(dir)) {
+          fs.mkdir(dir);
         }
       }
     },
@@ -322,7 +333,38 @@
     {
       name: 'deploy_journals',
       code: function() {
+        var JOURNALS = 'tools/journals';
+        const fs = require("fs");
+        const fse = require("fs-extra");
 
+        if ( ! fs.existsSync(JOURNALS)) {
+          return;
+        }
+
+        if ( ! fs.existsSync(JOURNALS + '/target')) {
+          fs.mkdir(JOURNALS + '/target');
+        }
+
+        if ( ! this.deployWithResourcesToAddToJAR ) {
+          console.log('Deploying journals');
+          var srcDir = ' deployment/${RESOURCES}/resources/*';
+          var outDir;
+          if ( this.runFromJAR ) {
+            outDir = this.JOURNAL_OUT;
+          } else {
+            outDir = this.JOURNAL_HOME;
+          }
+
+          fse.copySync(srcDir, destDir, function (err) {
+            if (err) {
+              console.error(err);
+            }
+          });
+        }
+
+        if ( ! this.runFromJAR ) {
+
+        }
       }
     }
   ]
